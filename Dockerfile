@@ -10,6 +10,7 @@ ENV NGX_DEVEL_KIT_VERSION 0.3.0
 ENV LUA_NGINX_MODULE_VERSION 0.10.7
 ENV ECHO_NGINX_MODULE_VERSION 0.61
 ENV HTTP_CONCAT_NGINX_MODULE_VERSION 1.2.2
+ENV OPENSSL_VERSION=OpenSSL_1_1_1
 
 # Install LUAJIT
 RUN apk add --no-cache luajit
@@ -58,6 +59,8 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-http_v2_module \
 		--with-ipv6 \
 		--with-ld-opt="-Wl,-rpath,/usr/lib" \
+		--with-openssl=/tmp/openssl-${OPENSSL_VERSION} --with-openssl-opt='enable-tls1_3' \
+		--with-cc-opt="-I/tmp/openssl-${OPENSSL_VERSION}/include" --with-ld-opt="-L/tmp/openssl-${OPENSSL_VERSION}/lib" \
 		--add-module=/tmp/nginx-brotli \
 		--add-module=/tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
 		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
@@ -70,7 +73,6 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		gcc \
 		libc-dev \
 		make \
-		openssl-dev \
 		pcre-dev \
 		zlib-dev \
 		linux-headers \
@@ -86,9 +88,11 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& export LUAJIT_INC=/usr/include/luajit-2.0 \
 	&& curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz -o /tmp/ndk.tar.gz \
 	&& tar -xvf /tmp/ndk.tar.gz -C /tmp \
+	&& curl -fSL https://github.com/openssl/openssl/archive/${OPENSSL_VERSION}.tar.gz -o /tmp/openssl.tar.gz \
 	&& curl -fSL https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGINX_MODULE_VERSION}.tar.gz -o /tmp/lua-nginx.tar.gz \
 	&& curl -fSL https://github.com/alibaba/nginx-http-concat/archive/${HTTP_CONCAT_NGINX_MODULE_VERSION}.tar.gz -o /tmp/nginx-http-concat.tar.gz \
 	&& curl -fSL https://github.com/openresty/echo-nginx-module/archive/v${ECHO_NGINX_MODULE_VERSION}.tar.gz -o /tmp/echo-nginx.tar.gz \
+	&& tar -xvf /tmp/openssl.tar.gz -C /tmp \
 	&& tar -xvf /tmp/lua-nginx.tar.gz -C /tmp \
 	&& tar -xvf /tmp/echo-nginx.tar.gz -C /tmp \
 	&& tar -xvf /tmp/nginx-http-concat.tar.gz -C /tmp \
@@ -129,11 +133,13 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& rm -rf /usr/src/nginx-$NGINX_VERSION \
 	&& rm -f /tmp/ndk.tar.gz \
 	&& rm -f /tmp/echo-nginx.tar.gz \
+	&& rm -f /tmp/openssl.tar.gz \
 	&& rm -f /tmp/lua-nginx.tar.gz \
 	&& rm -rf /tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
 	&& rm -rf /tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
 	&& rm -rf /tmp/echo-nginx-module-${ECHO_NGINX_MODULE_VERSION} \
 	&& rm -rf /tmp/nginx-http-concat-${HTTP_CONCAT_NGINX_MODULE_VERSION} \
+	&& rm -rf /tmp/openssl-${OPENSSL_VERSION}} \
 	&& rm -rf /tmp/nginx-brotli \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
