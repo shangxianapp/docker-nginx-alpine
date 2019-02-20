@@ -58,6 +58,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-http_v2_module \
 		--with-ipv6 \
 		--with-ld-opt="-Wl,-rpath,/usr/lib" \
+		--add-module=/tmp/nginx-brotli \
 		--add-module=/tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
 		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
 		--add-module=/tmp/echo-nginx-module-${ECHO_NGINX_MODULE_VERSION} \
@@ -74,6 +75,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		zlib-dev \
 		linux-headers \
 		curl \
+		git \
 		gnupg \
 		libxslt-dev \
 		gd-dev \
@@ -96,6 +98,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	# && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEYS" \
 	# && gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
 	# && rm -r "$GNUPGHOME" nginx.tar.gz.asc \
+	&& git clone --recursive https://github.com/google/ngx_brotli.git /tmp/nginx-brotli \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
@@ -131,6 +134,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& rm -rf /tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
 	&& rm -rf /tmp/echo-nginx-module-${ECHO_NGINX_MODULE_VERSION} \
 	&& rm -rf /tmp/nginx-http-concat-${HTTP_CONCAT_NGINX_MODULE_VERSION} \
+	&& rm -rf /tmp/nginx-brotli \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
 	# the rest away. To do this, we need to install `gettext`
