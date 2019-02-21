@@ -45,8 +45,6 @@ CONFIG="\
 		--with-http_v2_module \
 		--with-ipv6 \
 		--with-ld-opt="-Wl,-rpath,/usr/lib" \
-		--with-openssl=/tmp/openssl-${OPENSSL_VERSION} --with-openssl-opt='enable-tls1_3' \
-		--with-cc-opt="-I/tmp/openssl-${OPENSSL_VERSION}/include" --with-ld-opt="-L/tmp/openssl-${OPENSSL_VERSION}/lib" \
 		--add-module=/tmp/nginx-brotli \
 		--add-module=/tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
 		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
@@ -64,6 +62,7 @@ apk add --no-cache --virtual .build-deps \
 	gcc \
     libc-dev \
     make \
+    openssl-dev \
     pcre-dev \
     zlib-dev \
     linux-headers \
@@ -83,11 +82,9 @@ export LUAJIT_INC=/usr/include/luajit-2.0
 # install nginx develop kits
 curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz -o /tmp/ndk.tar.gz
 tar -xvf /tmp/ndk.tar.gz -C /tmp
-curl -fSL https://github.com/openssl/openssl/archive/${OPENSSL_VERSION}.tar.gz -o /tmp/openssl.tar.gz
 curl -fSL https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGINX_MODULE_VERSION}.tar.gz -o /tmp/lua-nginx.tar.gz
 curl -fSL https://github.com/alibaba/nginx-http-concat/archive/${HTTP_CONCAT_NGINX_MODULE_VERSION}.tar.gz -o /tmp/nginx-http-concat.tar.gz
 curl -fSL https://github.com/openresty/echo-nginx-module/archive/v${ECHO_NGINX_MODULE_VERSION}.tar.gz -o /tmp/echo-nginx.tar.gz
-tar -xvf /tmp/openssl.tar.gz -C /tmp
 tar -xvf /tmp/lua-nginx.tar.gz -C /tmp
 tar -xvf /tmp/echo-nginx.tar.gz -C /tmp
 tar -xvf /tmp/nginx-http-concat.tar.gz -C /tmp
@@ -123,13 +120,11 @@ strip /usr/lib/nginx/modules/*.so
 rm -rf /usr/src/nginx-$NGINX_VERSION
 rm -f /tmp/ndk.tar.gz
 rm -f /tmp/echo-nginx.tar.gz
-rm -f /tmp/openssl.tar.gz
 rm -f /tmp/lua-nginx.tar.gz
 rm -rf /tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION}
 rm -rf /tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION}
 rm -rf /tmp/echo-nginx-module-${ECHO_NGINX_MODULE_VERSION}
 rm -rf /tmp/nginx-http-concat-${HTTP_CONCAT_NGINX_MODULE_VERSION}
-rm -rf /tmp/openssl-${OPENSSL_VERSION}}
 rm -rf /tmp/nginx-brotli
 
 # Bring in gettext so we can get `envsubst`, then throw
