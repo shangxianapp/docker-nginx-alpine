@@ -33,6 +33,10 @@ docker run -d \
     shangxian/nginx:alpine
 ```
 
+## 注意
+
+为了让 Lua 有写入文件权限，在创建 `nginx` 用户时使用了 `-u 1000` 以提高用户权限。
+
 ## License
 
 MIT

@@ -55,7 +55,7 @@ CONFIG="\
 # add nginx group
 addgroup -S nginx
 # add nginx user
-adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx
+adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u 1000 nginx
 
 # install dependencies
 apk add --no-cache --virtual .build-deps \
