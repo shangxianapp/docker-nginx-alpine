@@ -12,11 +12,11 @@ ENV ECHO_NGINX_MODULE_VERSION 0.61
 ENV HTTP_CONCAT_NGINX_MODULE_VERSION 1.2.2
 
 # Install LUAJIT
-RUN apk add --no-cache luajit
+RUN apk add --no-cache luajit libwebp-tools
 
 COPY scripts/install.sh /root/install.sh
-
 RUN /bin/sh /root/install.sh
+RUN rm -f /root/install.sh
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf

@@ -8,4 +8,5 @@ services:
       - 80:80
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./webp.lua:/etc/nginx/lua/webp.lua
       - ./html:/usr/share/nginx/html
