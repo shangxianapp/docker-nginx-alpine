@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Install LUAJIT
+apk add --no-cache luajit libwebp-tools
+
 GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8
 
 CONFIG="\
@@ -77,7 +80,8 @@ apk add --no-cache --virtual .build-deps \
 
 # export variable
 export LUAJIT_LIB=/usr/lib
-export LUAJIT_INC=/usr/include/luajit-2.0
+# alpine@3.9 auto install luajit-2.1
+export LUAJIT_INC=/usr/include/luajit-2.1
 
 # install nginx develop kits
 curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz -o /tmp/ndk.tar.gz
