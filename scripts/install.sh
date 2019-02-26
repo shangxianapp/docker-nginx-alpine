@@ -1,10 +1,56 @@
 #!/bin/sh
 
-# Install LUAJIT
-apk add --no-cache luajit libwebp-tools
+NGINX_VERSION=1.14.2
+NGX_DEVEL_KIT_VERSION=0.3.0
+OPENRESTY_LUAJIT_VERSION=2.1-20190221
+LUA_NGINX_MODULE_VERSION=0.10.14
+ECHO_NGINX_MODULE_VERSION=0.61
+HTTP_CONCAT_NGINX_MODULE_VERSION=1.2.2
+
+sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8
 
+# add nginx group
+addgroup -S nginx
+# add nginx user
+adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u 1000 nginx
+
+# install dependencies
+apk add --no-cache --virtual .build-deps \
+	gcc \
+    libc-dev \
+    make \
+    openssl-dev \
+    pcre-dev \
+    zlib-dev \
+    linux-headers \
+    curl \
+    git \
+    gnupg \
+    libxslt-dev \
+    gd-dev \
+    geoip-dev \
+    perl-dev \
+    luajit-dev \
+
+# install webp tool
+apk add --no-cache libwebp-tools
+
+# Install LUAJIT
+curl -fSL https://github.com/openresty/luajit2/archive/v${OPENRESTY_LUAJIT_VERSION}.tar.gz -o /tmp/openresty-luajit.tar.gz
+tar -xvf /tmp/openresty-luajit.tar.gz -C /tmp
+cd /tmp/luajit2-${OPENRESTY_LUAJIT_VERSION}
+make && make install
+# remove install package
+rm -f /tmp/openresty-luajit.tar.gz
+
+# export variable
+export LUAJIT_LIB=/usr/local/lib
+# alpine@3.9 auto install luajit-2.1
+export LUAJIT_INC=/usr/local/include/luajit-2.1
+
+# install nginx develop kits
 CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -47,7 +93,7 @@ CONFIG="\
 		--with-file-aio \
 		--with-http_v2_module \
 		--with-ipv6 \
-		--with-ld-opt="-Wl,-rpath,/usr/lib" \
+		--with-ld-opt="-Wl,-rpath,${LUAJIT_LIB}" \
 		--add-module=/tmp/nginx-brotli \
 		--add-module=/tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
 		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
@@ -55,35 +101,6 @@ CONFIG="\
 		--add-module=/tmp/nginx-http-concat-${HTTP_CONCAT_NGINX_MODULE_VERSION} \
 	"
 
-# add nginx group
-addgroup -S nginx
-# add nginx user
-adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx -u 1000 nginx
-
-# install dependencies
-apk add --no-cache --virtual .build-deps \
-	gcc \
-    libc-dev \
-    make \
-    openssl-dev \
-    pcre-dev \
-    zlib-dev \
-    linux-headers \
-    curl \
-    git \
-    gnupg \
-    libxslt-dev \
-    gd-dev \
-    geoip-dev \
-    perl-dev \
-    luajit-dev \
-
-# export variable
-export LUAJIT_LIB=/usr/lib
-# alpine@3.9 auto install luajit-2.1
-export LUAJIT_INC=/usr/include/luajit-2.1
-
-# install nginx develop kits
 curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz -o /tmp/ndk.tar.gz
 tar -xvf /tmp/ndk.tar.gz -C /tmp
 curl -fSL https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGINX_MODULE_VERSION}.tar.gz -o /tmp/lua-nginx.tar.gz
@@ -121,6 +138,8 @@ install -m755 objs/ngx_http_perl_module-debug.so /usr/lib/nginx/modules/ngx_http
 ln -s ../../usr/lib/nginx/modules /etc/nginx/modules
 strip /usr/sbin/nginx*
 strip /usr/lib/nginx/modules/*.so
+
+# remove unuse install packages
 rm -rf /usr/src/nginx-$NGINX_VERSION
 rm -f /tmp/ndk.tar.gz
 rm -f /tmp/echo-nginx.tar.gz
@@ -144,7 +163,7 @@ runDeps="$( \
 			| xargs -r apk info --installed \
 			| sort -u \
 	)"
-
+	
 apk add --no-cache --virtual .nginx-rundeps $runDeps
 apk del .build-deps
 apk del .gettext

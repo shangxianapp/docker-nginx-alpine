@@ -10,6 +10,12 @@ Nginx Alpine 镜像，支持 [Lua](https://github.com/openresty/lua-nginx-module
 make build
 ```
 
+### 测试
+
+```bash
+make test
+```
+
 ### 直接覆盖默认配置文件
 
 ```bash

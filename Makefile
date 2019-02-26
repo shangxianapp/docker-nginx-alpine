@@ -1,4 +1,7 @@
 build:
 	docker build -t shangxian/nginx:alpine .
 
-.PHONY: build
+test:
+	cd ./test && docker-compose up
+
+.PHONY: build test
