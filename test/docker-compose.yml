@@ -6,7 +6,9 @@ services:
     image: shangxian/nginx:alpine
     ports:
       - 80:80
+      - 443:443
     volumes:
+      - ./ca:/etc/nginx/ca
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ./webp.lua:/etc/nginx/lua/webp.lua
       - ./html:/usr/share/nginx/html

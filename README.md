@@ -1,6 +1,6 @@
 # docker-nginx-alpine
 
-Nginx Alpine 镜像，支持 [Lua](https://github.com/openresty/lua-nginx-module) 、[nginx-echo](https://github.com/openresty/echo-nginx-module) 、[nginx-brotli](https://github.com/google/ngx_brotli) 、[nginx-http-concat](https://github.com/alibaba/nginx-http-concat) 、WebP 转换功能。
+Nginx Alpine 镜像，支持 [Lua](https://github.com/openresty/lua-nginx-module) 、[nginx-echo](https://github.com/openresty/echo-nginx-module) 、[nginx-brotli](https://github.com/google/ngx_brotli) 、[nginx-http-concat](https://github.com/alibaba/nginx-http-concat) 、WebP 转换、TLSv1.3 功能。
 
 ## 使用
 
@@ -11,6 +11,8 @@ make build
 ```
 
 ### 测试
+
+为了测试 HTTPS 支持，请添加 Hosts `127.0.0.1 www.fe.com` ，并运行：
 
 ```bash
 make test
