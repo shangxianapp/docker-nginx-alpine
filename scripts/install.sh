@@ -37,6 +37,9 @@ apk add --no-cache --virtual .build-deps \
 # install webp tool
 apk add --no-cache libwebp-tools
 
+apk add --no-cache logrotate
+apk add --no-cache tzdata
+
 # Install LUAJIT
 curl -fSL https://github.com/openresty/luajit2/archive/v${OPENRESTY_LUAJIT_VERSION}.tar.gz -o /tmp/openresty-luajit.tar.gz
 tar -xvf /tmp/openresty-luajit.tar.gz -C /tmp
@@ -110,7 +113,7 @@ tar -xvf /tmp/lua-nginx.tar.gz -C /tmp
 tar -xvf /tmp/echo-nginx.tar.gz -C /tmp
 tar -xvf /tmp/nginx-http-concat.tar.gz -C /tmp
 curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
-git clone --recursive https://github.com/google/ngx_brotli.git /tmp/nginx-brotli
+git clone --no-tags --depth 1 --recursive https://github.com/google/ngx_brotli.git /tmp/nginx-brotli
 mkdir -p /usr/src
 tar -zxC /usr/src -f nginx.tar.gz
 rm nginx.tar.gz
