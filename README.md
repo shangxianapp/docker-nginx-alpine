@@ -1,6 +1,6 @@
 # docker-nginx-alpine
 
-Nginx Alpine 镜像，支持 [Lua](https://github.com/openresty/lua-nginx-module) 、[nginx-echo](https://github.com/openresty/echo-nginx-module) 、[nginx-brotli](https://github.com/google/ngx_brotli) 、[nginx-http-concat](https://github.com/alibaba/nginx-http-concat) 、WebP 转换、TLSv1.3 功能。
+Nginx Alpine 镜像，支持 [Lua](https://github.com/openresty/lua-nginx-module) 、[nginx-echo](https://github.com/openresty/echo-nginx-module) 、[nginx-brotli](https://github.com/google/ngx_brotli) 、[nginx-http-concat](https://github.com/alibaba/nginx-http-concat) 、WebP 转换、TLSv1.3 、Logrotate 功能。
 
 ## 使用
 
@@ -40,6 +40,12 @@ docker run -d \
     -p 443:443 \
     shangxian/nginx:alpine
 ```
+
+## 功能
+
+### Logrotate
+
+默认 Logrotate 会对 `/var/log/nginx/**/*.log` 下的文件进行天级别的备份，你也可以使用覆盖 `/etc/logrotate.d/nginx` 来自定义配置。
 
 ## 注意
 
