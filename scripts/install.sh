@@ -6,6 +6,7 @@ OPENRESTY_LUAJIT_VERSION=2.1-20190221
 LUA_NGINX_MODULE_VERSION=0.10.14
 ECHO_NGINX_MODULE_VERSION=0.61
 SET_MISC_NGINX_MODULE_VERSION=0.32
+HEADERS_MORE_NGINX_MODULE=0.33
 HTTP_CONCAT_NGINX_MODULE_VERSION=1.2.2
 
 sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
@@ -104,6 +105,7 @@ CONFIG="\
 		--add-module=/tmp/echo-nginx-module-${ECHO_NGINX_MODULE_VERSION} \
 		--add-module=/tmp/set-misc-nginx-module-${SET_MISC_NGINX_MODULE_VERSION} \
 		--add-module=/tmp/nginx-http-concat-${HTTP_CONCAT_NGINX_MODULE_VERSION} \
+		--add-module=/tmp/headers-more-nginx-module-${HEADERS_MORE_NGINX_MODULE} \
 	"
 
 curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz -o /tmp/ndk.tar.gz
@@ -112,10 +114,12 @@ curl -fSL https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGINX_MOD
 curl -fSL https://github.com/alibaba/nginx-http-concat/archive/${HTTP_CONCAT_NGINX_MODULE_VERSION}.tar.gz -o /tmp/nginx-http-concat.tar.gz
 curl -fSL https://github.com/openresty/echo-nginx-module/archive/v${ECHO_NGINX_MODULE_VERSION}.tar.gz -o /tmp/echo-nginx.tar.gz
 curl -fSL https://github.com/openresty/set-misc-nginx-module/archive/v${SET_MISC_NGINX_MODULE_VERSION}.tar.gz -o /tmp/set-misc-nginx.tar.gz
+curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_NGINX_MODULE}.tar.gz -o /tmp/headers-more-nginx-module.tar.gz
 
 tar -xvf /tmp/lua-nginx.tar.gz -C /tmp
 tar -xvf /tmp/echo-nginx.tar.gz -C /tmp
 tar -xvf /tmp/set-misc-nginx.tar.gz -C /tmp
+tar -xvf /tmp/headers-more-nginx-module.tar.gz -C /tmp
 tar -xvf /tmp/nginx-http-concat.tar.gz -C /tmp
 curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
 git clone --no-tags --depth 1 --recursive https://github.com/google/ngx_brotli.git /tmp/nginx-brotli
@@ -155,6 +159,7 @@ rm -f /tmp/set-misc-nginx.tar.gz
 rm -f /tmp/lua-nginx.tar.gz
 rm -rf /tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION}
 rm -rf /tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION}
+rm -rf /tmp/headers-more-nginx-module-${HEADERS_MORE_NGINX_MODULE}
 rm -rf /tmp/echo-nginx-module-${ECHO_NGINX_MODULE_VERSION}
 rm -rf /tmp/set-misc-nginx-module-${SET_MISC_NGINX_MODULE_VERSION}
 rm -rf /tmp/nginx-http-concat-${HTTP_CONCAT_NGINX_MODULE_VERSION}
