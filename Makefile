@@ -1,5 +1,5 @@
 build:
-	docker build -t shangxian/nginx:2.1-alpine3.9 .
+	docker build -t ghcr.io/shangxianapp/nginx:latest-alpine .
 
 test:
 	cd ./test && docker-compose up
