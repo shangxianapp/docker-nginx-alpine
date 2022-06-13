@@ -34,7 +34,7 @@ apk add --no-cache --virtual .build-deps \
     gd-dev \
     geoip-dev \
     perl-dev \
-    luajit-dev \
+    luajit-dev
 
 # install webp tool
 apk add --no-cache libwebp-tools
@@ -48,6 +48,7 @@ tar -xvf /tmp/openresty-luajit.tar.gz -C /tmp
 cd /tmp/luajit2-${OPENRESTY_LUAJIT_VERSION}
 make && make install
 # remove install package
+# rm -rf /tmp/luajit2-${OPENRESTY_LUAJIT_VERSION}
 rm -f /tmp/openresty-luajit.tar.gz
 
 # export variable
@@ -99,6 +100,7 @@ CONFIG="\
 		--with-http_v2_module \
 		--with-ipv6 \
 		--with-ld-opt="-Wl,-rpath,${LUAJIT_LIB}" \
+		--add-module=/tmp/ngx_http_dyups_module-master \
 		--add-module=/tmp/nginx-brotli \
 		--add-module=/tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
 		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
@@ -108,14 +110,16 @@ CONFIG="\
 		--add-module=/tmp/headers-more-nginx-module-${HEADERS_MORE_NGINX_MODULE} \
 	"
 
-curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz -o /tmp/ndk.tar.gz
-tar -xvf /tmp/ndk.tar.gz -C /tmp
+curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v${NGX_DEVEL_KIT_VERSION}.tar.gz -o /tmp/ndk.tar.gz
 curl -fSL https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGINX_MODULE_VERSION}.tar.gz -o /tmp/lua-nginx.tar.gz
 curl -fSL https://github.com/alibaba/nginx-http-concat/archive/${HTTP_CONCAT_NGINX_MODULE_VERSION}.tar.gz -o /tmp/nginx-http-concat.tar.gz
 curl -fSL https://github.com/openresty/echo-nginx-module/archive/v${ECHO_NGINX_MODULE_VERSION}.tar.gz -o /tmp/echo-nginx.tar.gz
 curl -fSL https://github.com/openresty/set-misc-nginx-module/archive/v${SET_MISC_NGINX_MODULE_VERSION}.tar.gz -o /tmp/set-misc-nginx.tar.gz
 curl -fSL https://github.com/openresty/headers-more-nginx-module/archive/v${HEADERS_MORE_NGINX_MODULE}.tar.gz -o /tmp/headers-more-nginx-module.tar.gz
+curl -fSL https://github.com/yzprofile/ngx_http_dyups_module/archive/refs/heads/master.zip -o /tmp/ngx_http_dyups_module.zip
 
+unzip /tmp/ngx_http_dyups_module.zip -d /tmp
+tar -xvf /tmp/ndk.tar.gz -C /tmp
 tar -xvf /tmp/lua-nginx.tar.gz -C /tmp
 tar -xvf /tmp/echo-nginx.tar.gz -C /tmp
 tar -xvf /tmp/set-misc-nginx.tar.gz -C /tmp
@@ -127,15 +131,9 @@ mkdir -p /usr/src
 tar -zxC /usr/src -f nginx.tar.gz
 rm nginx.tar.gz
 cd /usr/src/nginx-$NGINX_VERSION
-./configure $CONFIG --with-debug
-make -j$(getconf _NPROCESSORS_ONLN)
-mv objs/nginx objs/nginx-debug
-mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so
-mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so
-mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so
-mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so
 ./configure $CONFIG
 make -j$(getconf _NPROCESSORS_ONLN)
+sed -i "s/-Werror//g" objs/Makefile
 make install
 rm -rf /etc/nginx/html/
 mkdir /etc/nginx/conf.d/
@@ -152,6 +150,10 @@ strip /usr/sbin/nginx*
 strip /usr/lib/nginx/modules/*.so
 
 # remove unuse install packages
+rm -f /tmp/ngx_http_dyups_module.zip
+rm -rf /tmp/ngx_http_dyups_module-master
+rm -rf /tmp/headers-more-nginx-module.tar.gz
+rm -rf /tmp/nginx-http-concat.tar.gz
 rm -rf /usr/src/nginx-$NGINX_VERSION
 rm -f /tmp/ndk.tar.gz
 rm -f /tmp/echo-nginx.tar.gz
